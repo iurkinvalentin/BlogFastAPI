@@ -5,17 +5,9 @@ from sqlalchemy.orm import Session
 from views import auth
 from schemas.user import Token
 
-from data.database import SessionLocal
+from data.database import get_db
 
 router = APIRouter()
-
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 
 @router.post("/token", response_model=Token)

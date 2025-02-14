@@ -32,9 +32,10 @@ def delete_user(
     db: Session = Depends(get_db),
     current_user: UserInDB = Depends(auth.get_current_user)
 ):
-    if current_user.id != user_id:
+    if not current_user.id or current_user.id != user_id:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Нельзя удалить другого пользователя"
         )
     return auth.delete_user_handler(user_id, db)
+

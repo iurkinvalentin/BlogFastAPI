@@ -28,26 +28,38 @@ def read_one_handler(blog_id, db: Session):
     return blog
 
 
-def update_blog_handler(blog_id, blog_data, db: Session):
+def update_blog_handler(blog_id: int, blog_data, db: Session):
     blog = db.query(Blog).filter(Blog.id == blog_id).first()
     if not blog:
         raise HTTPException(status_code=404, detail='Блог не найден')
-    updated_data = blog_data.dict(exclude_unset=True)
+
+    # Проверка, является ли blog_data объектом Pydantic
+    if isinstance(blog_data, dict):
+        updated_data = blog_data
+    else:
+        updated_data = blog_data.dict(exclude_unset=True)
+
     for key, value in updated_data.items():
         setattr(blog, key, value)
+    
     try:
         db.commit()
     except IntegrityError as e:
         db.rollback()
         raise HTTPException(
             status_code=409,
-            detail="Конфликт данных при обновлении блога") from e
+            detail="Конфликт данных при обновлении блога"
+        ) from e
     except SQLAlchemyError as e:
         db.rollback()
         raise HTTPException(
-            status_code=500, detail="Ошибка обновления данных в базе") from e
+            status_code=500,
+            detail="Ошибка обновления данных в базе"
+        ) from e
+
     db.refresh(blog)
     return blog
+
 
 
 def delete_blog_handler(blog_id, db: Session):

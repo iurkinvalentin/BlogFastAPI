@@ -3,7 +3,7 @@ from routers import blog, user, auth
 
 app = FastAPI(
     title='blog',
-    description='Gростое API блог приложение',
+    description='Простое API блог приложение',
     version='0.1'
 )
 

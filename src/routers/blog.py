@@ -33,6 +33,6 @@ def update_blog(blog_id: int, blog_update: BlogUpdate, db: Session = Depends(get
     return update_blog_handler(blog_id, blog_update, db)
 
 
-@router.delete('/{task_id}')
+@router.delete('/{blog_id}')
 def delete_blog(blog_id: int, db: Session = Depends(get_db)):
     return delete_blog_handler(blog_id, db)

@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from typing import Union
+from typing import Union, Optional
 from fastapi import Depends, HTTPException, status
 from jose import JWTError, jwt
 from passlib.context import CryptContext
@@ -48,7 +48,7 @@ def create_access_token(
     return encoded_jwt
 
 
-def get_user(db: Session, username: str) -> Union[UserInDB, None]:
+def get_user(db: Session, username: str) -> Optional[UserInDB]:
     user = db.query(User).filter(
         User.username == username).first()
     if user:
@@ -111,7 +111,7 @@ def register_handler(user_data, db: Session):
 def delete_user_handler(user_id, db: Session):
     existing_user = db.query(User).filter(User.id == user_id).first()
     if not existing_user:
-        assert HTTPException(status_code=404, detail='Пользователь не найден')
+        raise HTTPException(status_code=404, detail='Пользователь не найден')
     db.delete(existing_user)
     db.commit()
     return {"detail": "Пользователь успешно удалён"}

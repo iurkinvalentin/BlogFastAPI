@@ -15,8 +15,8 @@ class BlogUpdate(BaseModel):
 
 
 class BlogDelete(BaseModel):
-    title: Optional[str] = ''
-    text: Optional[str] = ''
+    title: Optional[str] = None
+    text: Optional[str] = None
     is_published: Optional[bool] = True
 
 
