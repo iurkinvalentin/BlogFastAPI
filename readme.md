@@ -1,0 +1,1 @@
+* Стек: python, fastapi, sqlalchemi, postgresql, jwt+oath2, pytest
