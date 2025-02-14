@@ -1,1 +1,1 @@
-# Стек: Python FastAPI SQLAlchemi postgresql jwt+OAuth2 pytest alembic
+# Стек: *Python *FastAPI *SQLAlchemi *postgresql *jwt+OAuth2 *pytest *alembic

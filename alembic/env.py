@@ -9,7 +9,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Добавляем путь к `src/`, чтобы Alembic видел модели
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../src")))
+sys.path.append(
+    os.path.abspath(os.path.join(os.path.dirname(__file__), "../src")))
 
 # Импортируем модели и базу
 from src.models.base import Base
@@ -32,18 +33,25 @@ if not DATABASE_URL:
 config = context.config
 fileConfig(config.config_file_name)
 
+
 # Функции для миграций
 def run_migrations_offline():
-    context.configure(url=DATABASE_URL, target_metadata=target_metadata, literal_binds=True, compare_type=True)
+    context.configure(
+        url=DATABASE_URL, target_metadata=target_metadata,
+        literal_binds=True, compare_type=True)
     with context.begin_transaction():
         context.run_migrations()
+
 
 def run_migrations_online():
     connectable = create_engine(DATABASE_URL, poolclass=pool.NullPool)
     with connectable.connect() as connection:
-        context.configure(connection=connection, target_metadata=target_metadata, compare_type=True)
+        context.configure(
+            connection=connection, target_metadata=target_metadata,
+            compare_type=True)
         with context.begin_transaction():
             context.run_migrations()
+
 
 if context.is_offline_mode():
     run_migrations_offline()

@@ -1,5 +1,5 @@
 from typing import Union, Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class Token(BaseModel):
@@ -19,8 +19,7 @@ class User(BaseModel):
     id: int
     username: str
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class UserInDB(BaseModel):
@@ -28,8 +27,7 @@ class UserInDB(BaseModel):
     username: str
     hashed_password: str
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class UserCreate(BaseModel):
@@ -40,6 +38,5 @@ class UserCreate(BaseModel):
 class UserRead(BaseModel):
     id: int
     username: str
-    
-    class Config:
-        orm_mode = True
+
+    model_config = ConfigDict(from_attributes=True)

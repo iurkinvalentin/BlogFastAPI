@@ -1,5 +1,5 @@
-from pydantic import BaseModel
-from typing import Optional
+from pydantic import BaseModel, ConfigDict, constr
+from typing import Optional, Annotated
 
 
 class BlogCreate(BaseModel):
@@ -25,5 +25,13 @@ class BlogResponse(BaseModel):
     text: str
     is_published: bool
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
+
+
+class LikeCreate(BaseModel):
+    blog_id: int
+
+
+class RatingCreate(BaseModel):
+    blog_id: int
+    rating: Annotated[int, constr(ge=1, le=5)]

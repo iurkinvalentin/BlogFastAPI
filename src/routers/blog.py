@@ -4,10 +4,12 @@ from data.database import get_db
 from views.blog import (
     create_blog_handler, read_blogs_handler,
     update_blog_handler, delete_blog_handler,
-    read_one_handler)
+    read_one_handler, like_handler,
+    rating_handler)
 from schemas.blog import (
-    BlogCreate, BlogResponse, BlogUpdate)
+    BlogCreate, BlogResponse, BlogUpdate, LikeCreate, RatingCreate)
 from typing import List
+from views import auth
 
 
 router = APIRouter()
@@ -36,3 +38,13 @@ def update_blog(blog_id: int, blog_update: BlogUpdate, db: Session = Depends(get
 @router.delete('/{blog_id}')
 def delete_blog(blog_id: int, db: Session = Depends(get_db)):
     return delete_blog_handler(blog_id, db)
+
+
+@router.post('/')
+def like_blog(like_data: LikeCreate, db: Session = Depends(get_db), current_user=Depends(auth.get_current_user)):
+    return like_handler(like_data, db, current_user)
+
+
+@router.post('/')
+def rating_blog(rating_data: RatingCreate, db: Session = Depends(get_db), current_user=Depends(auth.get_current_user)):
+    return rating_handler(rating_data, db, current_user)

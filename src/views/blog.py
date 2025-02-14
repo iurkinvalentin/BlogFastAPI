@@ -1,7 +1,7 @@
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
-from models.blog import Blog
+from models.blog import Blog, Like, Rating
 
 
 def create_blog_handler(blog_data, db: Session):
@@ -33,7 +33,6 @@ def update_blog_handler(blog_id: int, blog_data, db: Session):
     if not blog:
         raise HTTPException(status_code=404, detail='Блог не найден')
 
-    # Проверка, является ли blog_data объектом Pydantic
     if isinstance(blog_data, dict):
         updated_data = blog_data
     else:
@@ -41,7 +40,7 @@ def update_blog_handler(blog_id: int, blog_data, db: Session):
 
     for key, value in updated_data.items():
         setattr(blog, key, value)
-    
+
     try:
         db.commit()
     except IntegrityError as e:
@@ -61,7 +60,6 @@ def update_blog_handler(blog_id: int, blog_data, db: Session):
     return blog
 
 
-
 def delete_blog_handler(blog_id, db: Session):
     blog = db.query(Blog).filter(Blog.id == blog_id).first()
     if not blog:
@@ -69,3 +67,40 @@ def delete_blog_handler(blog_id, db: Session):
     db.delete(blog)
     db.commit()
     return {'detail': 'Блог успешно удален'}
+
+
+def like_handler(like_data, db: Session, current_user):
+    blog = db.query(Blog).filter(Blog.id == like_data.blog_id).first()
+    if not blog:
+        raise HTTPException(status_code=404, detail="Пост не найден")
+    existing_like = db.query(Like).filter(
+        Like.user_id == current_user.id,
+        Like.blog_id == like_data.blog_id).first()
+    if existing_like:
+        db.delete(existing_like)
+        db.commit()
+        return {"message": "Лайк удалён"}
+    new_like = Like(user_id=current_user.id, blog_id=like_data.blog_id)
+    db.add(new_like)
+    db.commit()
+    return {"message": "Лайк добавлен"}
+
+
+def rating_handler(rating_data, db: Session, current_user):
+    blog = db.query(Blog).filter(Blog.id == rating_data.blog_id).first()
+    if not blog:
+        raise HTTPException(status_code=404, detail="Пост не найден")
+    existing_rating = db.query(
+        Rating).filter(
+            Rating.user_id == current_user.id,
+            Rating.blog_id == rating_data.blog_id).first()
+    if existing_rating:
+        existing_rating.rating = rating_data.rating
+    else:
+        new_rating = Rating(
+            user_id=current_user.id, blog_id=rating_data.blog_id,
+            rating=rating_data.rating)
+        db.add(new_rating)
+
+    db.commit()
+    return {"message": "Рейтинг обновлён"}
