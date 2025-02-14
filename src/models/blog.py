@@ -1,5 +1,6 @@
 from sqlalchemy import Column, Integer, String, Boolean
-from models.base import Base
+from src.models.base import Base  # ✅ Правильный путь
+
 
 
 class Blog(Base):
