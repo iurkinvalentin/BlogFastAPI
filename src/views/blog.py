@@ -1,7 +1,7 @@
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
-from models.blog import Blog, Like, Rating
+from models.blog import Blog, Like, Rating, Comment
 
 
 def create_blog_handler(blog_data, db: Session):
@@ -104,3 +104,34 @@ def rating_handler(rating_data, db: Session, current_user):
 
     db.commit()
     return {"message": "Рейтинг обновлён"}
+
+
+def add_comment_handler(comment_data, db: Session, current_user):
+    new_comment = Comment(
+        user_id=current_user.id,
+        blog_id=comment_data.blog_id,
+        text=comment_data.text
+    )
+    db.add(new_comment)
+    db.commit()
+    db.refresh(new_comment)
+    return new_comment
+
+
+def get_comments_handler(blog_id, db: Session):
+    comments = db.query(Comment).filter(Comment.blog_id == blog_id).all()
+    return comments
+
+
+def delete_comment_handler(comment_id, db: Session, current_user):
+    comment = db.query(Comment).filter(Comment.id == comment_id).first()
+
+    if not comment:
+        raise HTTPException(status_code=404, detail="Комментарий не найден")
+
+    if comment.user_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Вы можете удалить только свой комментарий")
+
+    db.delete(comment)
+    db.commit()
+    return {"message": "Комментарий удалён"}

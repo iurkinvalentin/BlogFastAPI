@@ -35,3 +35,18 @@ class LikeCreate(BaseModel):
 class RatingCreate(BaseModel):
     blog_id: int
     rating: Annotated[int, constr(ge=1, le=5)]
+
+
+class CommentCreate(BaseModel):
+    blog_id: int
+    text: str
+
+
+class CommentResponse(BaseModel):
+    id: int
+    user_id: int
+    blog_id: int
+    text: str
+
+    model_config = ConfigDict(from_attributes=True)
+

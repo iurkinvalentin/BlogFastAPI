@@ -30,7 +30,7 @@ class Like(Base):
         UniqueConstraint('user_id', 'blog_id', 'name_unique_like'))
 
     user = relationship("User", back_populates="likes")
-    blog = relationship("Blog", back_populates="likes") 
+    blog = relationship("Blog", back_populates="likes")
 
 
 class Rating(Base):
@@ -43,3 +43,15 @@ class Rating(Base):
 
     user = relationship("User", back_populates="ratings")
     blog = relationship("Blog", back_populates="ratings")
+
+
+class Comment(Base):
+    __tablename__ = 'comments'
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey('users_id'))
+    blog_id = Column(Integer, ForeignKey('blog_id'))
+    text = Column(String, nullable=False)
+
+    user = relationship("User", back_populates="comments")
+    blog = relationship("Blog", back_populates="comments")
